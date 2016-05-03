@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %}</title>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/jquery-ui/jquery-ui.css') }}">
+
+  <script type="text/javascript" src="{{ url_for('static', filename='external/jquery.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='external/jquery-ui/jquery-ui.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='external/d3.v2.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='external/guage.js') }}"></script>
+
+  {% block head %}{% endblock %}
+
+</head>
+
+<body>
+  
+  <div id="wrapper" class="">
+    <header class="">
+      <h1>Log Recorder</h1>
+    </header>
+    <hr>
+    <div id="content" class="">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    <footer>
+      {% block footer %}
+        &copy; Copyright 2014 | Udit Narayan | Log Recorder
+      {% endblock %}
+    </footer>
+
+  </div>
+
+</body>
+</html>

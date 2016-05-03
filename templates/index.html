@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Home :: Server Status{% endblock %}
+
+{% block head %}
+	<script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+	<h2>Server Status</h2>
+
+	<div id="cpuStatusWrapper">
+		<div id="cpuStatus">
+
+			<section class="cpu-status-sections">	
+				<span id="cpuGaugeContainer"></span>
+			</section>
+
+			<section class="cpu-status-sections">
+				<span id="memoryGaugeContainer"></span>
+			</section>
+
+			<section class="cpu-status-sections">
+				
+			</section>
+		</div>
+	</div>
+
+{% endblock %}

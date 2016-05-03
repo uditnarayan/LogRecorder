@@ -1,0 +1,27 @@
+body { 
+	margin: 0; padding: 0;
+	background: #f2f5f7 url("../external/jquery-ui/images/ui-bg_highlight-hard_100_f2f5f7_1x100.png") repeat-x;
+}
+
+#wrapper{ margin: 0 auto; width: 980px; padding:10px; }
+
+#cpuStatusWrapper{
+	float: left;
+	width: 100%;
+	display: block;
+	clear: both;
+}
+
+#cpuStatus{
+	float: left;
+	width: 100%;
+	display: block;
+	clear: both;
+}
+
+.cpu-status-sections{
+	width: 33%;
+	float: left;
+	display: inline-block;
+}
+
