@@ -30,13 +30,13 @@ class Message(Resource):
             #     os.makedirs(nsdir)
 
             # nsdir = nsdir + "/" + "messages-" + dtstring + ".txt" 
-            # entry = unicode(datetime.datetime.now()) + "    " + text
+            entry = unicode(datetime.datetime.now()) + '  ' + clientip + '  "' + ns + '"  "' + text + '"'
             # f = open(nsdir,'a')
             # f.write(entry + '\n')
             # f.close()
 
-            logger.info(clientip, ns, text)
-            return "Logged", 201
+            logger.info(entry)
+            return entry, 201
         except TypeError:
             return "Internal Server Error", 500
 
@@ -74,8 +74,8 @@ def create_timed_rotating_log(path):
                                        backupCount=2, 
                                        utc=False)
 
-    logFormatter = logging.Formatter("%(asctime)  %(message)s")
-    handler.setFormatter( logFormatter )
+    #logFormatter = logging.Formatter("%(asctime)  %(message)s")
+    #handler.setFormatter( logFormatter )
     logger.addHandler(handler)
 
 
