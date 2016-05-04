@@ -5,7 +5,7 @@ $(function() {
 	{
 		var config = 
 		{
-			size: 200,
+			size: 220,
 			label: label,
 			min: undefined != min ? min : 0,
 			max: undefined != max ? max : 100,
@@ -24,7 +24,7 @@ $(function() {
 	{
 		gauges["cpu"].redraw(data.cpu);
 		gauges["memory"].redraw(data.mem);		
-		//$('#rpsGuageContainer').txt(data.rps)
+		$('#rpsValue').text(data.rps);
 	}
 	
 	function getRandomValue(gauge)
@@ -44,23 +44,34 @@ $(function() {
 	        url: "/messages",
 	        dataType: "json",
 	        success: function (arg) {
-	        	console.log(arg);
 	        	resp = JSON.parse(arg);
-	            $.each(resp, function(i,v){	        
-	            	if(i % 2 == 0)
-	            		classname = "file-item li-even"
-	            	else
-	            		classname = "file-item li-even"
-
-	            	var tr = $('<tr>',{class:classname});
-	            	tr.append($('<td>',{class:"file-name", text:v.file}))
-	            	tr.append($('<td>',{class:"file-date", text:v.date}))
+	        	if(resp.length == 0){
+	        		var tr = $('<tr>',{class:"file-item"});
+	            	tr.append($('<td>',{class:"file-name", text:"No message files."}));
+	            	tr.append($('<td>',{class:"file-date", text:" "}));
 	            	$('#logFileList').append(tr);
-	            });
+	        	}
+	        	else{
+		            $.each(resp, function(i,v){	        
+		            	if(i % 2 == 0)
+		            		classname = "file-item li-even"
+		            	else
+		            		classname = "file-item li-even"
+
+		            	var tr = $('<tr>',{class:classname});
+		            	tr.append($('<td>',{class:"file-name", text:v.file}));
+		            	tr.append($('<td>',{class:"file-date", text:v.date}));
+		            	$('#logFileList').append(tr);
+		            });
+	        	}
 	        },
 	        timeout: 30000,
 	        error: function (request, error) {
 	            console.log(error);
+	            var tr = $('<tr>',{class:"file-item"});
+	            tr.append($('<td>',{class:"file-name", text:"Cannot get list of message files."}));
+	            tr.append($('<td>',{class:"file-date", text:" "}));
+	            $('#logFileList').append(tr);
 	        },
 	        async: false
 	    });
@@ -69,7 +80,7 @@ $(function() {
 	
 		heartbeat.onmessage = function (beat) {
 		  var data = JSON.parse(beat.data);
-		  console.log(data);
+		  //console.log(data);
 		  updateGauges(data);
 		};
 	}

@@ -10,8 +10,7 @@ api = Api(app)
 
 datadir = "data"
 counter = 0
-countList = []
-maxWindow = 10
+window = [0,0,0,0,0]
 
 class Message(Resource):
     def post(self):
@@ -43,7 +42,7 @@ class Message(Resource):
             f.close()
 
             # logger.info(entry)
-            ++counter
+            counter = counter + 1
             return entry, 201
         except TypeError:
             return "Internal Server Error", 500
@@ -52,19 +51,24 @@ class Message(Resource):
 
 class Messages(Resource):
     def get(self):
+
         file_list = os.listdir(datadir)
-        full_list = [os.path.join(datadir,i) for i in file_list]
-        # time_sorted_list = sorted(file_list, key=os.path.getmtime)
 
-        flist = []
-        for file in full_list:
-            mtime = os.path.getmtime(file)
-            rec = {}
-            rec["file"] = file
-            rec["date"] = unicode(datetime.datetime.fromtimestamp(mtime))
-            flist.append(rec)
+        if len(file_list) > 0:
+            full_list = [os.path.join(datadir,i) for i in file_list]
+            # time_sorted_list = sorted(file_list, key=os.path.getmtime)
 
-        return json.dumps(flist), 200
+            flist = []
+            for file in full_list:
+                mtime = os.path.getmtime(file)
+                rec = {}
+                rec["file"] = file
+                rec["date"] = unicode(datetime.datetime.fromtimestamp(mtime))
+                flist.append(rec)
+
+            return json.dumps(flist), 200
+        else:
+            return json.dumps([]), 200
 
 def event_stream():
     while True:
@@ -73,8 +77,8 @@ def event_stream():
         time.sleep(1)
 
 def cal_stats():
-    global counter, countList, maxWindow
-    
+    global window, counter
+
     stats = {}
     # CPU
     stats["cpu"] = psutil.cpu_percent(interval=1)
@@ -84,15 +88,13 @@ def cal_stats():
     stats["mem"] = mem.percent
 
     # Request per second calculated over last 10 seconds
-    stats['rps'] = 0
-    if len(countList) == maxWindow:
-        countList.pop()
-    
-    countList.insert(0, counter)
+    window.pop()
+    window.insert(0, counter)
     counter = 0
-    for val in countList:
-        stats['rps'] = stats['rps'] + val
-
+    rps = 0
+    for num in window:
+        rps = rps + num
+    stats['rps'] = rps / 5
     return stats    
 
 @app.route('/', methods=['GET'])
