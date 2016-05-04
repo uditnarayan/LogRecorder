@@ -1,13 +1,5 @@
 $(function() {
 
-	var heartbeat = new EventSource('/heartbeat');
-	
-	heartbeat.onmessage = function (beat) {
-	  var data = JSON.parse(beat.data);
-	  console.log(data);
-	  updateGauges(data);
-	};
-
 	var gauges = [];			
 	function createGauge(name, label, min, max)
 	{
@@ -28,16 +20,11 @@ $(function() {
 		gauges[name].render();
 	}
 	
-	function createGauges()
-	{		
-		createGauge("cpu", "CPU");
-		createGauge("memory", "Memory");
-	}
-	
 	function updateGauges(data)
 	{
 		gauges["cpu"].redraw(data.cpu);
 		gauges["memory"].redraw(data.mem);		
+		//$('#rpsGuageContainer').txt(data.rps)
 	}
 	
 	function getRandomValue(gauge)
@@ -46,10 +33,46 @@ $(function() {
 		return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow*2) *  Math.random();
 	}
 	
-	function initialize()
-	{
-		createGauges();
-		setInterval(updateGauges, 5000);
+	function initilialze()
+	{		
+		createGauge("cpu", "CPU");
+		createGauge("memory", "Memory");
+
+		var xhr = $.ajax({
+	        type: "GET",
+	        data: {},
+	        url: "/messages",
+	        dataType: "json",
+	        success: function (arg) {
+	        	console.log(arg);
+	        	resp = JSON.parse(arg);
+	            $.each(resp, function(i,v){	        
+	            	if(i % 2 == 0)
+	            		classname = "file-item li-even"
+	            	else
+	            		classname = "file-item li-even"
+
+	            	var tr = $('<tr>',{class:classname});
+	            	tr.append($('<td>',{class:"file-name", text:v.file}))
+	            	tr.append($('<td>',{class:"file-date", text:v.date}))
+	            	$('#logFileList').append(tr);
+	            });
+	        },
+	        timeout: 30000,
+	        error: function (request, error) {
+	            console.log(error);
+	        },
+	        async: false
+	    });
+
+	    var heartbeat = new EventSource('/heartbeat');
+	
+		heartbeat.onmessage = function (beat) {
+		  var data = JSON.parse(beat.data);
+		  console.log(data);
+		  updateGauges(data);
+		};
 	}
-	initialize();
+
+	initilialze();
 });

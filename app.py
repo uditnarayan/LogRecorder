@@ -9,10 +9,15 @@ app = Flask(__name__)
 api = Api(app)
 
 datadir = "data"
+counter = 0
+countList = []
+maxWindow = 10
 
 class Message(Resource):
     def post(self):
         try:
+            global counter, datadir
+
             parser = reqparse.RequestParser()
             parser.add_argument('namespace', type=str, required=True)
             parser.add_argument('text', type=str, required=True)
@@ -23,20 +28,22 @@ class Message(Resource):
             ns = args['namespace']
             text = args['text']
             clientip = unicode(request.remote_addr)
+            dtime = datetime.datetime.now()
+            dtstring =  dtime.strftime("%Y-%m-%d")
 
-            dtstring =  datetime.datetime.now().strftime("%Y_%m_%d")
             # nsdir = datadir + "/" + ns
             # if not os.path.exists(nsdir):
             #     os.makedirs(nsdir)
 
             # nsdir = nsdir + "/" + "messages-" + dtstring + ".txt" 
             file = datadir + "/" + "messages-" + dtstring + ".log" 
-            entry = unicode(datetime.datetime.now()) + '  ' + clientip + '  "' + ns + '"  "' + text + '"'
+            entry = unicode(dtime) + '  ' + clientip + '  "' + ns + '"  "' + text + '"'
             f = open(file,'a')
             f.write(entry + '\n')
             f.close()
 
             # logger.info(entry)
+            ++counter
             return entry, 201
         except TypeError:
             return "Internal Server Error", 500
@@ -63,14 +70,28 @@ def event_stream():
     while True:
         message = cal_stats()
         yield 'data: %s\n\n' % json.dumps(message)
-        time.sleep(0.01)
+        time.sleep(1)
 
 def cal_stats():
+    global counter, countList, maxWindow
+    
     stats = {}
+    # CPU
     stats["cpu"] = psutil.cpu_percent(interval=1)
 
+    # Memory
     mem = psutil.virtual_memory()
     stats["mem"] = mem.percent
+
+    # Request per second calculated over last 10 seconds
+    stats['rps'] = 0
+    if len(countList) == maxWindow:
+        countList.pop()
+    
+    countList.insert(0, counter)
+    counter = 0
+    for val in countList:
+        stats['rps'] = stats['rps'] + val
 
     return stats    
 

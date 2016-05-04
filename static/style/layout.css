@@ -25,3 +25,35 @@ body {
 	display: inline-block;
 }
 
+#logFileListWrapper{
+	clear: both;
+	float: left;
+	width: 100%;
+	display: block;
+	margin: 30px 0;
+}
+
+#logFileList{
+	display: block;
+	width: 100%;
+}
+.file-item{
+	display: block;
+	width: 100%;
+	border-top:1px solid #e2e5e7;
+}
+
+.file-item:nth-child(odd){
+	background-color: #FFF;
+}
+.file-item:last-child{
+	border-bottom: 1px solid #e2e5e7;
+}
+.table-col-heading{
+	width:: 400px;
+	text-align: left;
+	font-weight: bold;
+}
+.file-item td {
+	width: 400px;
+}
